@@ -13,6 +13,11 @@ public class BronzeLeague extends AbstractLeague {
 
 	}
 
+	@Override
+	public String toString() {
+		return "BronzeLeague";
+	}
+
 	public BronzeLeague(AbstractLanguage language, List<AbstractStudentUser> users) {
 		super(language, users);
 	}
