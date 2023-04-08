@@ -23,6 +23,9 @@ public class MaterialFileWriter implements IFileWriter {
 	@Override
 	public void writeFile() {
 		File file = new File(getFileName());
+		if(file.exists()) {
+			return ;
+		}
 		try {
 			file.createNewFile();
 			FileWriter fileWriter = new FileWriter(file);

@@ -41,20 +41,18 @@ public abstract class AbstractLeague implements ILeague {
 	public void setUsers(List<AbstractStudentUser> users) {
 		this.users = users;
 	}
-	
+
 	public List<AbstractStudentUser> getsortedUsers() {
 		return getUsers().stream().sorted(new Comparator<AbstractStudentUser>() {
 			@Override
 			public int compare(AbstractStudentUser o1, AbstractStudentUser o2) {
-				if (o1.getScore() > o2.getScore()) {
-					return 1;
-				} else if (o2.getScore() > o1.getScore()) {
-					return -1;
+				int scoreComparison = Double.compare(o2.getScore(), o1.getScore());
+				if (scoreComparison != 0) {
+					return scoreComparison;
 				} else {
-					return Integer.compare(o1.getStreak(), o2.getStreak());
+					return Integer.compare(o2.getStreak(), o1.getStreak());
 				}
-			}}).collect(Collectors.toList());
+			}
+		}).collect(Collectors.toList());
 	}
-	
-
 }
