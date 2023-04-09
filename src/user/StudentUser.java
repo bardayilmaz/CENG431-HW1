@@ -13,9 +13,9 @@ public class StudentUser extends AbstractStudentUser {
 		super(abstractStudentUser);
 	}
 
-	public StudentUser(String username, String password, int score, int streak, AbstractLanguage language,
+	public StudentUser(String username, String password, int score, int streak, int solvedQuizzes, AbstractLanguage language,
 			AbstractLeague league) {
-		super(username, password, score, streak, language, league);
+		super(username, password, score, streak, solvedQuizzes,language, league);
 	}
 
 	public StudentUser(String username, String password) {

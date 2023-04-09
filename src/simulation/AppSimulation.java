@@ -1,7 +1,9 @@
 package simulation;
 
 import fileio.CsvReader;
+import fileio.IFileWriter;
 import fileio.MaterialFileWriter;
+import fileio.StudentUserFileWriter;
 import material.language.AbstractLanguage;
 import material.language.Language;
 import material.league.*;
@@ -13,25 +15,25 @@ import material.unit.Unit;
 import user.AbstractStudentUser;
 import util.StudentUserCsvCreator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 
 public class AppSimulation implements ISimulation {
     private List<AbstractStudentUser> students;
     private List<AbstractLanguage> languages;
+    private IFileWriter fileWriter;
 
     public AppSimulation() {
-        MaterialFileWriter writer = new MaterialFileWriter("languages.csv", initMaterials());
+        List<AbstractLanguage> languages = initMaterials();
+        MaterialFileWriter writer = new MaterialFileWriter("languages.csv", languages);
         writer.writeFile();
         CsvReader csvReader = new CsvReader(";");
         StudentUserCsvCreator creator = new StudentUserCsvCreator(csvReader, "users.csv");
 
         this.students = creator.createStudents();
-        this.languages = initMaterials();
+        this.languages = languages;
         this.userStreakAndLanguageSetter(students, this.languages, 0, 365);
+        fileWriter = new StudentUserFileWriter(students, "users.csv", ";");
     }
     @Override
     public void startSimulation() {
@@ -47,14 +49,20 @@ public class AppSimulation implements ISimulation {
 
             this.arrangeLeagues(leagues,language);
 
-            for (AbstractLeague league : leagues) {
-                System.out.println(league + "-------" +language.getName() +"-------------");
-                for (AbstractStudentUser student : league.getUsers()) {
-                    System.out.println(student.getLanguage().getName() + " " + student.getUsername() + " " + student.getScore() + " " + student.getStreak() + " " + student.getCurrentUnit().getName());
-                }
-            }
-            System.out.println("####################################################################");
+//            for (AbstractLeague league : leagues) {
+//                System.out.println(league + "-------" +language.getName() +"-------------");
+//                for (AbstractStudentUser student : league.getUsers()) {
+//                    System.out.println(student.getLanguage().getName() + " " + student.getUsername() + " " + student.getScore() + " " + student.getStreak() + " " + student.getCurrentUnit().getName());
+//                }
+//            }
+//            System.out.println("####################################################################");
         }
+        fileWriter.writeFile();
+        printMostScored();
+        printStudentInMostAdvancedUnitInGerman();
+        printLanguageWithMaxNumberOfUnits();
+        printLanguageWithMaxNumberOfQuizzes();
+        printBestThreeOfItalianSilver();
     }
 
 
@@ -98,17 +106,21 @@ public class AppSimulation implements ISimulation {
         return languages;
     }
 
-    private void arrangeLeagues(List<AbstractLeague> leagues,AbstractLanguage language){
+    private void arrangeLeagues(List<AbstractLeague> leagues, AbstractLanguage language){
         for (AbstractStudentUser student : this.students) {
             if (student.getLanguage().equals(language)) {
                 leagues.get(0).getUsers().add(student);
+                student.setLeague(leagues.get(0));
             }
         }
         for(int j = 0; j<leagues.size()-1;j++){
             List<AbstractStudentUser> risers;
-            risers=leagues.get(j).getRisingStudents();
+            risers = leagues.get(j).getRisingStudents();
             leagues.get(j+1).setUsers(risers);
             leagues.get(j).getUsers().removeAll(risers);
+            for(AbstractStudentUser riser : risers) {
+                riser.setLeague(leagues.get(j));
+            }
         }
     }
 
@@ -154,6 +166,7 @@ public class AppSimulation implements ISimulation {
                     }
                     student.setScore(student.getScore() + quizScore);
                     remainingQuizCount--;
+                    student.setSolvedQuizzes(student.getSolvedQuizzes() + 1);
                     if (remainingQuizCount == 0) {
                         break unitLoop;
                     }
@@ -161,6 +174,7 @@ public class AppSimulation implements ISimulation {
             }
         }
     }
+
     private static String generateRandomString(int length) {
         String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
@@ -176,5 +190,56 @@ public class AppSimulation implements ISimulation {
         return sb.toString();
     }
 
+    private void printMostScored() {
+        AbstractStudentUser user = getStudents().stream().max(Comparator.comparingInt(AbstractStudentUser::getScore)).get();
+        System.out.println(user.getUsername() + " " + user.getScore() + " points");
+    }
+
+    private void printStudentInMostAdvancedUnitInGerman() {
+        AbstractStudentUser user = getStudents().stream().filter(abstractStudentUser -> abstractStudentUser.getLanguage().getName().equals("German"))
+                .max(Comparator.comparingInt(o -> Integer.parseInt(o.getCurrentUnit().getName().split(" ")[1]))).get();
+        System.out.println(user.getUsername() + " " + user.getCurrentUnit().getName());
+    }
+
+    private void printLanguageWithMaxNumberOfUnits() {
+        AbstractLanguage language =  getLanguages().stream().max(Comparator.comparingInt(o -> o.getUnits().size())).get();
+        System.out.println(language.getName() + " " + language.getUnits().size() + " Units");
+    }
+
+    private void printLanguageWithMaxNumberOfQuizzes() {
+        AbstractLanguage language = getLanguages().stream().max(Comparator.comparingInt(AbstractLanguage::getQuizCount)).get();
+        System.out.println(language.getName() + " " + language.getQuizCount() + " Quizzes");
+    }
+
+    private void printBestThreeOfItalianSilver() {
+        AbstractLanguage language = getLanguages().stream().filter(abstractLanguage -> abstractLanguage.getName().equals("Italian"))
+                .findFirst().get();
+        AbstractLeague silverLeague = this.students.stream().filter(abstractStudentUser -> abstractStudentUser.getLanguage().getName().equals("Italian") &&
+                abstractStudentUser.getLeague().getClass().getName().equals("material.league.SilverLeague")).findFirst().get().getLeague();
+        int topLimit = Math.min(silverLeague.getUsers().size(), 3);
+        List<AbstractStudentUser> topList = silverLeague.getsortedUsers().subList(0, topLimit);
+        System.out.print("Italian Silver League Top " + topLimit + ": ");
+        int counter = 1;
+        for(AbstractStudentUser user : topList) {
+            System.out.print(counter + "." + user.getUsername() + " ");
+        }
+
+    }
+
+    public List<AbstractStudentUser> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<AbstractStudentUser> students) {
+        this.students = students;
+    }
+
+    public List<AbstractLanguage> getLanguages() {
+        return languages;
+    }
+
+    public void setLanguages(List<AbstractLanguage> languages) {
+        this.languages = languages;
+    }
 }
 

@@ -32,7 +32,7 @@ public class SilverLeague extends AbstractLeague {
 
 	@Override
 	public List<AbstractStudentUser> getRisingStudents() {
-		return getsortedUsers().subList(0, 10);
+		return getsortedUsers().subList(0, getUsers().size() >= 10 ? 10 : getUsers().size()-1);
 	}
 
 }

@@ -10,10 +10,10 @@ import java.io.FileNotFoundException;
 
 public class CsvReader implements IFileReader<List<String>> {
 
-	private String seperator;
+	private String separator;
 	
-	public CsvReader(String seperator) {
-		this.seperator = seperator;
+	public CsvReader(String separator) {
+		this.separator = separator;
 	}
 
 	@Override
@@ -24,7 +24,7 @@ public class CsvReader implements IFileReader<List<String>> {
 			String line;
 			while(sc.hasNextLine()) {
 				line = sc.nextLine();
-				result.add(Arrays.asList(line.split(getSeperator())).stream().map(t -> t.trim()).collect(Collectors.toList()));
+				result.add(Arrays.stream(line.split(getSeparator())).map(String::trim).collect(Collectors.toList()));
 			}
 		} catch (FileNotFoundException e) {
 			System.err.println("file not found");
@@ -34,12 +34,12 @@ public class CsvReader implements IFileReader<List<String>> {
 		return result;
 	}
 
-	public String getSeperator() {
-		return seperator;
+	public String getSeparator() {
+		return separator;
 	}
 
-	public void setSeperator(String seperator) {
-		this.seperator = seperator;
+	public void setSeparator(String separator) {
+		this.separator = separator;
 	}
 
 

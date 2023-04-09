@@ -9,6 +9,7 @@ public abstract class AbstractStudentUser extends AbstractUser {
 	private AbstractLanguage language;
 	private int score;
 	private int streak;
+	private int solvedQuizzes;
 	private AbstractLeague league;
 	private AbstractUnit currentUnit;
 	
@@ -16,23 +17,26 @@ public abstract class AbstractStudentUser extends AbstractUser {
 	public AbstractStudentUser() {
 		super();
 		this.language = null;
-		this.score = -1;
-		this.streak = -1;
+		this.score = 0;
+		this.streak = 0;
+		this.solvedQuizzes = 0;
 		this.league = null;
 	}
 
-	public AbstractStudentUser(String username, String password, int score, int streak, AbstractLanguage language, AbstractLeague league) {
+	public AbstractStudentUser(String username, String password, int score, int streak, int solvedQuizzes,AbstractLanguage language, AbstractLeague league) {
 		super(username, password);
 		this.score = score;
 		this.streak = streak;
 		this.language = language;
 		this.league = league;
+		this.solvedQuizzes = solvedQuizzes;
 	}
 	
 	public AbstractStudentUser(String username, String password) {
 		super(username, password);
-		this.score = -1;
-		this.streak = -1;
+		this.score = 0;
+		this.streak = 0;
+		this.solvedQuizzes = 0;
 	}
 
 	public AbstractStudentUser(AbstractStudentUser abstractStudentUser) {
@@ -41,6 +45,8 @@ public abstract class AbstractStudentUser extends AbstractUser {
 		this.streak = abstractStudentUser.getStreak();
 		this.language = abstractStudentUser.getLanguage();
 		this.league = abstractStudentUser.getLeague();
+		this.solvedQuizzes = abstractStudentUser.getSolvedQuizzes();
+		this.currentUnit = abstractStudentUser.getCurrentUnit();
 	}
 
 	public AbstractLanguage getLanguage() {
@@ -83,4 +89,11 @@ public abstract class AbstractStudentUser extends AbstractUser {
 		this.currentUnit = currentUnit;
 	}
 
+	public int getSolvedQuizzes() {
+		return solvedQuizzes;
+	}
+
+	public void setSolvedQuizzes(int solvedQuizzes) {
+		this.solvedQuizzes = solvedQuizzes;
+	}
 }

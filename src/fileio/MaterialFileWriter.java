@@ -24,7 +24,7 @@ public class MaterialFileWriter implements IFileWriter {
 	public void writeFile() {
 		File file = new File(getFileName());
 		if(file.exists()) {
-			return ;
+			return;
 		}
 		try {
 			file.createNewFile();

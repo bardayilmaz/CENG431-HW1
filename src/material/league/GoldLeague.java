@@ -33,7 +33,7 @@ public class GoldLeague extends AbstractLeague {
 
 	@Override
 	public List<AbstractStudentUser> getRisingStudents() {
-		return getsortedUsers().subList(0, 5).stream()
+		return getsortedUsers().subList(0, getUsers().size() >= 5 ? 5 : getUsers().size()-1).stream()
 				.filter(abstractStudentUser -> abstractStudentUser.getStreak() >= 7)
 				.collect(Collectors.toList());
 	}

@@ -1,8 +1,6 @@
 package material.league;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import material.language.AbstractLanguage;
 import user.AbstractStudentUser;
@@ -28,7 +26,7 @@ public class BronzeLeague extends AbstractLeague {
 
 	@Override
 	public List<AbstractStudentUser> getRisingStudents() {
-		return getsortedUsers().subList(0, 15);
+		return getsortedUsers().subList(0, getUsers().size() >= 15 ? 15 : getUsers().size()-1);
 	}
 
 }
