@@ -19,6 +19,15 @@ public class SapphireLeague extends AbstractLeague{
         super(abstractLeague);
     }
 
+    public SapphireLeague(AbstractLanguage language) {
+        super(language);
+    }
+
+    @Override
+    public String toString() {
+        return "SapphireLeague";
+    }
+
     @Override
     public List<AbstractStudentUser> getRisingStudents() {
         return getUsers().stream().filter(abstractStudentUser -> {

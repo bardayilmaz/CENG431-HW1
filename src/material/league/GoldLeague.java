@@ -23,6 +23,15 @@ public class GoldLeague extends AbstractLeague {
 	}
 
 	@Override
+	public String toString() {
+		return "GoldLeague";
+	}
+
+	public GoldLeague(AbstractLanguage language) {
+		super(language);
+	}
+
+	@Override
 	public List<AbstractStudentUser> getRisingStudents() {
 		return getsortedUsers().subList(0, 5).stream()
 				.filter(abstractStudentUser -> abstractStudentUser.getStreak() >= 7)

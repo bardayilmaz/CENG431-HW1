@@ -16,9 +16,18 @@ public class SilverLeague extends AbstractLeague {
 		// TODO Auto-generated constructor stub
 	}
 
+	@Override
+	public String toString() {
+		return "SilverLeague";
+	}
+
 	public SilverLeague(AbstractLeague abstractLeague) {
 		super(abstractLeague);
 		// TODO Auto-generated constructor stub
+	}
+
+	public SilverLeague(AbstractLanguage language) {
+		super(language);
 	}
 
 	@Override

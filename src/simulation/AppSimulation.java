@@ -38,54 +38,23 @@ public class AppSimulation implements ISimulation {
         this.makeQuizzes(this.students, 6);
 
         for (AbstractLanguage language : this.languages) {
-            AbstractLeague bronze = new BronzeLeague(language, new ArrayList<>());
+            List<AbstractLeague> leagues = new ArrayList<>();
+            leagues.add(new BronzeLeague(language, new ArrayList<>()));
+            leagues.add(new SilverLeague(language));
+            leagues.add(new GoldLeague(language));
+            leagues.add(new SapphireLeague(language));
+            leagues.add(new RubyLeague(language));
 
-            for (AbstractStudentUser student : this.students) {
-                if (student.getLanguage().equals(language)) {
-                    bronze.getUsers().add(student);
+            this.arrangeLeagues(leagues,language);
+
+            for (AbstractLeague league : leagues) {
+                System.out.println(league + "-------" +language.getName() +"-------------");
+                for (AbstractStudentUser student : league.getUsers()) {
+                    System.out.println(student.getLanguage().getName() + " " + student.getUsername() + " " + student.getScore() + " " + student.getStreak() + " " + student.getCurrentUnit().getName());
                 }
             }
-
-            List<AbstractStudentUser> risers = bronze.getRisingStudents();
-            AbstractLeague silver = new SilverLeague(language, risers);
-            bronze.getUsers().removeAll(risers);
-
-            risers = silver.getRisingStudents();
-            AbstractLeague gold = new GoldLeague(language, risers);
-            silver.getUsers().removeAll(risers);
-
-            risers = gold.getRisingStudents();
-            AbstractLeague sapphire = new SapphireLeague(language, risers);
-            gold.getUsers().removeAll(risers);
-
-
-            risers = sapphire.getRisingStudents();
-            AbstractLeague ruby = new RubyLeague(language, risers);
-            sapphire.getUsers().removeAll(risers);
             System.out.println("####################################################################");
-
-            System.out.println("##############  BRONZE  #########################");
-            for(AbstractStudentUser student : bronze.getUsers()) {
-                System.out.println(student.getLanguage().getName()+" "+student.getUsername()+" "+ student.getScore() + " " + student.getStreak() +" " + student.getCurrentUnit().getName());
-            }
-            System.out.println("##############  SILVER  #########################");
-            for(AbstractStudentUser student : silver.getUsers()) {
-                System.out.println(student.getLanguage().getName()+" "+student.getUsername()+" "+ student.getScore() + " " + student.getStreak() +" " + student.getCurrentUnit().getName());
-            }
-            System.out.println("##############  gold  #########################");
-            for(AbstractStudentUser student : gold.getUsers()) {
-                System.out.println(student.getLanguage().getName()+" "+student.getUsername()+" "+ student.getScore() + " " + student.getStreak() +" " + student.getCurrentUnit().getName());
-            }
-            System.out.println("################ saphire #######################");
-            for(AbstractStudentUser student : sapphire.getUsers()) {
-                System.out.println(student.getLanguage().getName()+" "+student.getUsername()+" "+ student.getScore() + " " + student.getStreak() +" " + student.getCurrentUnit().getName());
-            }
-            System.out.println("################# ruby ######################");
-            for(AbstractStudentUser student : ruby.getUsers()) {
-                System.out.println(student.getLanguage().getName()+" "+student.getUsername()+" "+ student.getScore() + " " + student.getStreak() +" " + student.getCurrentUnit().getName());
-            }
         }
-
     }
 
 
@@ -129,6 +98,20 @@ public class AppSimulation implements ISimulation {
         return languages;
     }
 
+    private void arrangeLeagues(List<AbstractLeague> leagues,AbstractLanguage language){
+        for (AbstractStudentUser student : this.students) {
+            if (student.getLanguage().equals(language)) {
+                leagues.get(0).getUsers().add(student);
+            }
+        }
+        for(int j = 0; j<leagues.size()-1;j++){
+            List<AbstractStudentUser> risers;
+            risers=leagues.get(j).getRisingStudents();
+            leagues.get(j+1).setUsers(risers);
+            leagues.get(j).getUsers().removeAll(risers);
+        }
+    }
+
     private AbstractQuestion initQuestion(){
         Random randomGenerator = new Random();
         int questionType = randomGenerator.nextInt(4);
@@ -162,10 +145,10 @@ public class AppSimulation implements ISimulation {
             unitLoop:
             for(AbstractUnit unit : student.getLanguage().getUnits()) {
                 student.setCurrentUnit(unit); // this is for simulation
-                for(AbstractQuiz quiz : unit.getQuizzes()) {
+                for (AbstractQuiz quiz : unit.getQuizzes()) {
                     int quizScore = 0;
-                    for(AbstractQuestion question : quiz.getQuestions()) {
-                        if(rnd.nextBoolean()) {
+                    for (AbstractQuestion question : quiz.getQuestions()) {
+                        if (rnd.nextBoolean()) {
                             quizScore += question.getPoint();
                         }
                     }
@@ -176,7 +159,6 @@ public class AppSimulation implements ISimulation {
                     }
                 }
             }
-            System.out.println(student.getPassword() + " " + student.getCurrentUnit().getName() + " " + student.getScore() + " " + student.getStreak());
         }
     }
     private static String generateRandomString(int length) {

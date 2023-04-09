@@ -21,6 +21,15 @@ public class RubyLeague extends AbstractLeague {
 		// TODO Auto-generated constructor stub
 	}
 
+	public RubyLeague(AbstractLanguage language) {
+		super(language);
+	}
+
+	@Override
+	public String toString() {
+		return "RubyLeague";
+	}
+
 	@Override
 	public List<AbstractStudentUser> getRisingStudents() {
 		// TODO Auto-generated method stub

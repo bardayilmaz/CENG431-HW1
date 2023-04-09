@@ -25,6 +25,10 @@ public abstract class AbstractLeague implements ILeague {
 		this.language = abstractLeague.language;
 		this.users = abstractLeague.users;
 	}
+	public AbstractLeague(AbstractLanguage language) {
+		this.language = language;
+		this.users=null;
+	}
 	
 	public AbstractLanguage getLanguage() {
 		return language;
@@ -54,5 +58,12 @@ public abstract class AbstractLeague implements ILeague {
 				}
 			}
 		}).collect(Collectors.toList());
+	}
+
+	@Override
+	public String toString() {
+		return "AbstractLeague{" +
+				"language=" + language.getName() +
+				'}';
 	}
 }
